@@ -56,7 +56,7 @@ foreach ($i in $h) {
     $procname = $i
     $p = $i | Measure-Object -character;
     $c = $p.Characters
-    if ($c < 3) {
+    if ($c -le 2) {
         # TO DO - Select PID Here
         $fileup = "Unusually short file name - Process: " + $procname
         Add-Content $f\ActivityRecord.txt $fileup
