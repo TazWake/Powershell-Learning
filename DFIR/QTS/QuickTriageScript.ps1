@@ -1,6 +1,13 @@
 # Quick system triage
-# This PS Script is designed to run a series of tasks for IR and record them in an activity record.
+<# 
+This PS Script is designed to run a series of tasks for IR and log into an activity record.
+-------------------------------------------------------------------------------------------
 
+NOTES:
+* there is a dependency on 'function Get-InjectedThread' (from Jared Atkinson - https://gist.github.com/jaredcatkinson/23905d34537ce4b5b1818c3e6405c1d2)
+for this to run. If it is not already available, make sure the function block is moved to the start of this script before running.
+
+#>
 # ## Create Activity Folder
 $f = Get-Date -Format FileDateTimeUniversal
 $f = "Analysis" + $f
@@ -34,7 +41,7 @@ Get-Process | Sort StartTime | Out-File $f\RunningProcesses.txt
 $proclisthash = Get-FileHash $f\RunningProcesses.txt | Select Hash
 $proclisthash = $proclisthash -replace "@{Hash=",""
 $proclisthash = $proclisthash -replace "}",""
-$proclisthash = "ProcessList.txt File Hash (SHA256): " + $proclisthash
+$proclisthash = "ProcessList.txt file hash (SHA256): " + $proclisthash
 
 $proclistcount = Get-Content $f\RunningProcesses.txt | Measure-Object -Line | Select Lines
 $proclistcount = $proclistcount -replace "@{Lines=",""
@@ -98,7 +105,7 @@ Get-Service | Where-Object { $_.Status -eq "Stopped" } | Out-File $f\StoppedServ
 $runningservicehash = Get-FileHash $f\RunningServices.txt | Select Hash
 $runningservicehash = $runningservicehash -replace "@{Hash=",""
 $runningservicehash = $runningservicehash -replace "}",""
-$a = "RunningServices.txt file hash: " + $runningservicehash
+$a = "RunningServices.txt file hash (SHA256): " + $runningservicehash
 $runningservicescount = Get-Content $f\RunningServices.txt | Measure-Object -Line | Select Lines
 $runningservicescount = $runningservicescount -replace "@{Lines=",""
 $runningservicescount = $runningservicescount -replace "}",""
@@ -112,7 +119,7 @@ Add-Content $f\ActivityRecord.txt $b
 $stopservhash = Get-FileHash $f\StoppedServices.txt | Select Hash
 $stopservhash = $stopservhash -replace "@{Hash=",""
 $stopservhash = $stopservhash -replace "}",""
-$a = "StoppedServices.txt file hash: " + $stopservhash
+$a = "StoppedServices.txt file hash (SHA256): " + $stopservhash
 $stopservcnt = Get-Content $f\StoppedServices.txt | Measure-Object -Line | Select Lines
 $stopservcnt = $stopservcnt -replace "@{Lines=",""
 $stopservcnt = $stopservcnt -replace "}",""
@@ -124,7 +131,70 @@ Add-Content $f\ActivityRecord.txt "A list of stopped services has been created i
 Add-Content $f\ActivityRecord.txt $a
 Add-Content $f\ActivityRecord.txt $b
 
-# ## End Capture
+# ## Capture Services
+
+Add-Content $f\ActivityRecord.txt ""
+Add-Content $f\ActivityRecord.txt "---------------------------"
+Add-Content $f\ActivityRecord.txt "    Checking Registry"
+Add-Content $f\ActivityRecord.txt "---------------------------"
+Add-Content $f\ActivityRecord.txt ""
+
+# List known DLLs
+
+Get-ChildItem -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\' | Where-Object { $_.Name -eq "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Session Manager\KnownDLLs" } | Out-File $f\KnownDLLs.txt
+
+Add-Content $f\ActivityRecord.txt ""
+Add-Content $f\ActivityRecord.txt "Known DLLs (registry key) has been exported to .\KnownDLLs.txt"
+$kdllshash = Get-FileHash $f\KnownDLLs.txt | Select Hash
+$kdllshash = $kdllshash -replace "@{Hash=",""
+$kdllshash = $kdllshash -replace "}",""
+$a = "Autostarts.txt file hash (SHA256): " + $kdllshash
+Add-Content $f\ActivityRecord.txt $a
+Add-Content $f\ActivityRecord.txt ""
+
+# Check Run / RunOnce Keys
+
+Add-Content $f\Autostarts.txt "Extracting HKLM: \Software\Microsoft\Windows\CurrentVersion\Run"
+Add-Content $f\Autostarts.txt "---------------------------------------------------------------" 
+Get-ItemProperty "HKLM:\Software\Microsoft\Windows\CurrentVersion\Run" | Out-File -FilePath $f\Autostarts.txt -Append -Encoding ascii
+Add-Content $f\Autostarts.txt ""
+
+Add-Content $f\Autostarts.txt "Extracting HKLM: \Software\Microsoft\Windows\CurrentVersion\RunOnce"
+Add-Content $f\Autostarts.txt "-------------------------------------------------------------------"
+Get-ItemProperty "HKLM:\Software\Microsoft\Windows\CurrentVersion\RunOnce" | Out-File -FilePath $f\Autostarts.txt -Append -Encoding ascii
+Add-Content $f\Autostarts.txt ""
+
+Add-Content $f\Autostarts.txt "Extracting HKLM: \Software\Microsoft\Windows\CurrentVersion\RunOnceEx"
+Add-Content $f\Autostarts.txt "-------------------------------------------------------------------"
+Get-ItemProperty "HKLM:\Software\Microsoft\Windows\CurrentVersion\RunOnce" | Out-File -FilePath $f\Autostarts.txt -Append -Encoding ascii
+Add-Content $f\Autostarts.txt ""
+
+Add-Content $f\Autostarts.txt "Extracting HKCU: \Software\Microsoft\Windows\CurrentVersion\Run"
+Add-Content $f\Autostarts.txt "---------------------------------------------------------------"
+Get-ItemProperty "HKCU:\Software\Microsoft\Windows\CurrentVersion\Run" | Out-File -FilePath $f\Autostarts.txt -Append -Encoding ascii
+Add-Content $f\Autostarts.txt ""
+
+Add-Content $f\Autostarts.txt "Extracting HKCU: \Software\Microsoft\Windows\CurrentVersion\RunOnce"
+Add-Content $f\Autostarts.txt "-------------------------------------------------------------------"
+Get-ItemProperty "HKCU:\Software\Microsoft\Windows\CurrentVersion\RunOnce" | Out-File -FilePath $f\Autostarts.txt -Append -Encoding ascii
+Add-Content $f\Autostarts.txt ""
+
+Add-Content $f\Autostarts.txt ""
+Add-Content $f\Autostarts.txt "Extracting WinLogon data"
+Add-Content $f\Autostarts.txt "------------------------"
+Get-ItemProperty "HKLM:\Software\Microsoft\Windows NT\CurrentVersion\Winlogon\" | Out-File -FilePath $f\Autostarts.txt -Append -Encoding ascii
+Add-Content $f\Autostarts.txt ""
+
+# Update Log
+Add-Content $f\ActivityRecord.txt "Common Registry Autostart locations copied to Autostarts.txt"
+$autostartshash = Get-FileHash $f\Autostarts.txt | Select Hash
+$autostartshash = $autostartshash -replace "@{Hash=",""
+$autostartshash = $autostartshash -replace "}",""
+$a = "Autostarts.txt file hash (SHA256): " + $autostartshash
+Add-Content $f\ActivityRecord.txt $a
+
+
+# ## End Of Document
 Add-Content $f\ActivityRecord.txt ""
 Add-Content $f\ActivityRecord.txt "---------------------------"
 Add-Content $f\ActivityRecord.txt "     TASKS COMPLETE"
@@ -139,6 +209,11 @@ Add-Content $f\ActivityRecord.txt $b
 Add-Content $f\ActivityRecord.txt ""
 Add-Content $f\ActivityRecord.txt "---------------------------"
 
+Clear-Host
+Write-Host "Processing Completed at $a" -ForegroundColor White -BackgroundColor Black
+Write-Host "Log data stored in $f\ActivityRecord.txt" -ForegroundColor White -BackgroundColor Black
+Get-FileHash $f\Autostarts.txt | Select Hash 
+
 # #################################################################################################
 # ####### IMPORT FUNCTIONS ########################################################################
 # #################################################################################################
@@ -146,55 +221,17 @@ Add-Content $f\ActivityRecord.txt "---------------------------"
 function Get-InjectedThread
 {
     <# 
-    
     .SYNOPSIS 
-    
     Looks for threads that were created as a result of code injection.
-    
     .DESCRIPTION
-    
     Memory resident malware (fileless malware) often uses a form of memory injection to get code execution. Get-InjectedThread looks at each running thread to determine if it is the result of memory injection.
-    
     Common memory injection techniques that *can* be caught using this method include:
     - Classic Injection (OpenProcess, VirtualAllocEx, WriteProcessMemory, CreateRemoteThread)
     - Reflective DLL Injection
     - Memory Module
-
     NOTE: Nothing in security is a silver bullet. An attacker could modify their tactics to avoid detection using this methodology.
-    
     .NOTES
-
     Author - Jared Atkinson (@jaredcatkinson)
-
-    .EXAMPLE 
-    
-    PS > Get-InjectedThread 
-
-    ProcessName               : ThreadStart.exe
-    ProcessId                 : 7784
-    Path                      : C:\Users\tester\Desktop\ThreadStart.exe
-    KernelPath                : C:\Users\tester\Desktop\ThreadStart.exe
-    CommandLine               : "C:\Users\tester\Desktop\ThreadStart.exe"
-    PathMismatch              : False
-    ThreadId                  : 14512
-    AllocatedMemoryProtection : PAGE_EXECUTE_READWRITE
-    MemoryProtection          : PAGE_EXECUTE_READWRITE
-    MemoryState               : MEM_COMMIT
-    MemoryType                : MEM_PRIVATE
-    BasePriority              : 8
-    IsUniqueThreadToken       : False
-    Integrity                 : MEDIUM_MANDATORY_LEVEL
-    Privilege                 : SeChangeNotifyPrivilege
-    LogonId                   : 999
-    SecurityIdentifier        : S-1-5-21-386661145-2656271985-3844047388-1001
-    UserName                  : DESKTOP-HMTGQ0R\SYSTEM
-    LogonSessionStartTime     : 3/15/2017 5:45:38 PM
-    LogonType                 : System
-    AuthenticationPackage     : NTLM
-    BaseAddress               : 4390912
-    Size                      : 4096
-    Bytes                     : {144, 195, 0, 0...}
-    
     #>
 
     [CmdletBinding()]
@@ -297,28 +334,20 @@ function New-InMemoryModule
 {
 <#
 .SYNOPSIS
-
 Creates an in-memory assembly and module
-
 Author: Matthew Graeber (@mattifestation)
 License: BSD 3-Clause
 Required Dependencies: None
 Optional Dependencies: None
- 
 .DESCRIPTION
-
 When defining custom enums, structs, and unmanaged functions, it is
 necessary to associate to an assembly module. This helper function
 creates an in-memory module that can be passed to the 'enum',
 'struct', and Add-Win32Type functions.
-
 .PARAMETER ModuleName
-
 Specifies the desired name for the in-memory assembly and module. If
 ModuleName is not provided, it will default to a GUID.
-
 .EXAMPLE
-
 $Module = New-InMemoryModule -ModuleName Win32
 #>
 
@@ -1744,41 +1773,25 @@ function OpenProcess
 {
     <#
     .SYNOPSIS
-
     Opens an existing local process object.
-
     .DESCRIPTION
-
     To open a handle to another local process and obtain full access rights, you must enable the SeDebugPrivilege privilege.
     The handle returned by the OpenProcess function can be used in any function that requires a handle to a process, such as the wait functions, provided the appropriate access rights were requested.
     When you are finished with the handle, be sure to close it using the CloseHandle function.
-
     .PARAMETER ProcessId
-
     The identifier of the local process to be opened.
     If the specified process is the System Process (0x00000000), the function fails and the last error code is ERROR_INVALID_PARAMETER. If the specified process is the Idle process or one of the CSRSS processes, this function fails and the last error code is ERROR_ACCESS_DENIED because their access restrictions prevent user-level code from opening them.
-
     .PARAMETER DesiredAccess
-
     The access to the process object. This access right is checked against the security descriptor for the process. This parameter can be one or more of the process access rights.
     If the caller has enabled the SeDebugPrivilege privilege, the requested access is granted regardless of the contents of the security descriptor.
-
     .PARAMETER InheritHandle
-
     If this value is TRUE, processes created by this process will inherit the handle. Otherwise, the processes do not inherit this handle.
-
     .NOTES
-    
     Author - Jared Atkinson (@jaredcatkinson)
-    
     .LINK
-
     https://msdn.microsoft.com/en-us/library/windows/desktop/ms684320(v=vs.85).aspx
-    
     .LINK
-
     https://msdn.microsoft.com/en-us/library/windows/desktop/ms684880(v=vs.85).aspx
-
     .EXAMPLE
     #>
 
@@ -1819,30 +1832,18 @@ function OpenProcessToken
 { 
     <#
     .SYNOPSIS
-
     The OpenProcessToken function opens the access token associated with a process.
-
     .PARAMETER ProcessHandle
-
     A handle to the process whose access token is opened. The process must have the PROCESS_QUERY_INFORMATION access permission.
-
     .PARAMETER DesiredAccess
-
     Specifies an access mask that specifies the requested types of access to the access token. These requested access types are compared with the discretionary access control list (DACL) of the token to determine which accesses are granted or denied.
     For a list of access rights for access tokens, see Access Rights for Access-Token Objects.
-
     .NOTES
-    
     Author - Jared Atkinson (@jaredcatkinson)
-    
     .LINK
-
     https://msdn.microsoft.com/en-us/library/windows/desktop/aa379295(v=vs.85).aspx
-    
     .LINK
-
     https://msdn.microsoft.com/en-us/library/windows/desktop/aa374905(v=vs.85).aspx
-
     .EXAMPLE
     #>
 
@@ -1880,39 +1881,23 @@ function OpenThread
 {
     <#
     .SYNOPSIS
-
     Opens an existing thread object.
-
     .DESCRIPTION
-
     The handle returned by OpenThread can be used in any function that requires a handle to a thread, such as the wait functions, provided you requested the appropriate access rights. The handle is granted access to the thread object only to the extent it was specified in the dwDesiredAccess parameter.
     When you are finished with the handle, be sure to close it by using the CloseHandle function.
-
     .PARAMETER ThreadId
-
     The identifier of the thread to be opened.
-
     .PARAMETER DesiredAccess
-
     The access to the thread object. This access right is checked against the security descriptor for the thread. This parameter can be one or more of the thread access rights.
     If the caller has enabled the SeDebugPrivilege privilege, the requested access is granted regardless of the contents of the security descriptor.
-
     .PARAMETER InheritHandle
-
     If this value is TRUE, processes created by this process will inherit the handle. Otherwise, the processes do not inherit this handle.
-    
     .NOTES
-    
     Author - Jared Atkinson (@jaredcatkinson)
-    
     .LINK
-
     https://msdn.microsoft.com/en-us/library/windows/desktop/ms684335(v=vs.85).aspx
-    
     .LINK
-
     https://msdn.microsoft.com/en-us/library/windows/desktop/ms686769(v=vs.85).aspx
-
     .EXAMPLE
     #>
 
@@ -1953,40 +1938,24 @@ function OpenThreadToken
 {
     <#
     .SYNOPSIS
-
     The OpenThreadToken function opens the access token associated with a thread
-
     .DESCRIPTION
-
     Tokens with the anonymous impersonation level cannot be opened.
     Close the access token handle returned through the Handle parameter by calling CloseHandle.
-
     .PARAMETER ThreadHandle
-
     A handle to the thread whose access token is opened.
-
     .PARAMETER DesiredAccess
-
     Specifies an access mask that specifies the requested types of access to the access token. These requested access types are reconciled against the token's discretionary access control list (DACL) to determine which accesses are granted or denied.
-
     .PARAMETER OpenAsSelf
-
     TRUE if the access check is to be made against the process-level security context.
     FALSE if the access check is to be made against the current security context of the thread calling the OpenThreadToken function.
     The OpenAsSelf parameter allows the caller of this function to open the access token of a specified thread when the caller is impersonating a token at SecurityIdentification level. Without this parameter, the calling thread cannot open the access token on the specified thread because it is impossible to open executive-level objects by using the SecurityIdentification impersonation level.
-
     .NOTES
-    
     Author - Jared Atkinson (@jaredcatkinson)
-    
     .LINK
-    
     https://msdn.microsoft.com/en-us/library/windows/desktop/aa379296(v=vs.85).aspx
-    
     .LINK
-
     https://msdn.microsoft.com/en-us/library/windows/desktop/aa374905(v=vs.85).aspx
-
     .EXAMPLE
     #>
 
@@ -2030,15 +1999,10 @@ function QueryFullProcessImageName
 {
     <#
     .SYNOPSIS
-
     Retrieves the full name of the executable image for the specified process.
-
     .PARAMETER ProcessHandle
-
     A handle to the process. This handle must be created with the PROCESS_QUERY_INFORMATION or PROCESS_QUERY_LIMITED_INFORMATION access right.
-
     .PARAMETER Flags
-
     This parameter can be one of the following values.
     0x00 - The name should use the Win32 path format.
     0x01 - The name should use the native system path format.
@@ -2082,35 +2046,20 @@ function ReadProcessMemory
 {
     <#
     .SYNOPSIS
-
     Reads data from an area of memory in a specified process. The entire area to be read must be accessible or the operation fails.
-
     .DESCRIPTION
-
     ReadProcessMemory copies the data in the specified address range from the address space of the specified process into the specified buffer of the current process. Any process that has a handle with PROCESS_VM_READ access can call the function.
-
     The entire area to be read must be accessible, and if it is not accessible, the function fails.
-
     .PARAMETER ProcessHandle
-
     A handle to the process with memory that is being read. The handle must have PROCESS_VM_READ access to the process.
-
     .PARAMETER BaseAddress
-
     The base address in the specified process from which to read. Before any data transfer occurs, the system verifies that all data in the base address and memory of the specified size is accessible for read access, and if it is not accessible the function fails.
-
     .PARAMETER Size
-
     The number of bytes to be read from the specified process.
-
     .NOTES
-    
     Author - Jared Atkinson (@jaredcatkinson)
-    
     .LINK
-
     https://msdn.microsoft.com/en-us/library/windows/desktop/ms680553(v=vs.85).aspx
-    
     .EXAMPLE
     #>
 
@@ -2218,21 +2167,13 @@ function Thread32First
 {
     <#
     .SYNOPSIS
-
     Retrieves information about the first thread of any process encountered in a system snapshot.
-
     .PARAMETER SnapshotHandle
-
     A handle to the snapshot returned from a previous call to the CreateToolhelp32Snapshot function.
-
     .NOTES
-    
     Author - Jared Atkinson (@jaredcatkinson)
-    
     .LINK
-
     https://msdn.microsoft.com/en-us/library/windows/desktop/ms686728(v=vs.85).aspx
-
     .EXAMPLE
     #>
 
@@ -2267,25 +2208,15 @@ function VirtualQueryEx
 {
     <#
     .SYNOPSIS
-
     Retrieves information about a range of pages within the virtual address space of a specified process.
-
     .PARAMETER ProcessHandle
-
     A handle to the process whose memory information is queried. The handle must have been opened with the PROCESS_QUERY_INFORMATION access right, which enables using the handle to read information from the process object.
-
     .PARAMETER BaseAddress
-
     The base address of the region of pages to be queried. This value is rounded down to the next page boundary.
-    
     .NOTES
-    
     Author - Jared Atkinson (@jaredcatkinson)
-    
     .LINK
-
     https://msdn.microsoft.com/en-us/library/windows/desktop/aa366907(v=vs.85).aspx
-
     .EXAMPLE
     #>
 
