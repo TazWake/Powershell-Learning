@@ -18,3 +18,8 @@ As of 20 Jan 1018, this script carries out the following:
 * Check for _obvious_ signs of process impersonation
 * List running services into a text file
 * List stopped services into a text file
+* Checks registry
+    * Known DLLs exported to text file. Use this to check for hijacking, tampering or risks
+    * Autoruns exported to text file
+        * Run, RunOnce, RunOnceEx, Winlogon
+* Produces a final hash of the activity record on console
