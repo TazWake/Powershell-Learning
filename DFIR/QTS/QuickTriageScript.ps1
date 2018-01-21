@@ -4,10 +4,15 @@ This PS Script is designed to run a series of tasks for IR and log into an activ
 -------------------------------------------------------------------------------------------
 
 NOTES:
-* there is a dependency on 'function Get-InjectedThread' (from Jared Atkinson - https://gist.github.com/jaredcatkinson/23905d34537ce4b5b1818c3e6405c1d2)
-for this to run. If it is not already available, make sure the function block is moved to the start of this script before running.
+* there is a dependency on 'function Get-InjectedThread' (from Jared Atkinson - 
+https://gist.github.com/jaredcatkinson/23905d34537ce4b5b1818c3e6405c1d2)for this to run. 
+If it is not already available, make sure the function block is moved to the start of this script before running. 
+
+* the process sort often fails with the IDLE process as it doesnt have a start time. This does not affect any
+other functionality.
 
 #>
+
 # ## Create Activity Folder
 $f = Get-Date -Format FileDateTimeUniversal
 $f = "Analysis" + $f
