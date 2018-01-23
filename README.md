@@ -5,7 +5,13 @@ Trial and error creation of powershell scripts to help with IR
 
 The from others directory will hold any scripts which have been 100% lifted and shifted
 
-## NMAP - Example XML Format
+## QTS
+This is designed to be a holder for various data collection tasks in support of IR
+
+## NMAP Parser
+This is _supposed_ to be a simple script for reading nmap/zenmap XML and converting it.
+
+### NMAP - Example XML Format
 
 ```XML
 <nmaprun>
@@ -42,4 +48,7 @@ The from others directory will hold any scripts which have been 100% lifted and 
 		<ipidsequence></ipidsequence>
 		<tcptssequence></tcptssequence>
 	</host>
-</nmaprun>```
+</nmaprun>
+```
+
+## More to follow...
