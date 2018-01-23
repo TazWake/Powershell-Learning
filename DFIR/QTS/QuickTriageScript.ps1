@@ -12,9 +12,7 @@ If it is not already available, make sure the function block is moved to the sta
 other functionality.
 
 #>
-
-# ## Create Activity Folder
-$f = Get-Date -Format FileDateTimeUniversal
+ = Get-Date -Format FileDateTimeUniversal
 $f = "Analysis" + $f
 New-Item $f -type directory
 
@@ -43,14 +41,10 @@ Add-Content $f\ActivityRecord.txt "---------------------------"
 Add-Content $f\ActivityRecord.txt ""
 
 Get-Process | Sort StartTime | Out-File $f\RunningProcesses.txt
-$proclisthash = Get-FileHash $f\RunningProcesses.txt | Select Hash
-$proclisthash = $proclisthash -replace "@{Hash=",""
-$proclisthash = $proclisthash -replace "}",""
+$proclisthash = Get-FileHash $f\RunningProcesses.txt | Select -ExpandProperty Hash
 $proclisthash = "ProcessList.txt file hash (SHA256): " + $proclisthash
 
-$proclistcount = Get-Content $f\RunningProcesses.txt | Measure-Object -Line | Select Lines
-$proclistcount = $proclistcount -replace "@{Lines=",""
-$proclistcount = $proclistcount -replace "}",""
+$proclistcount = Get-Content $f\RunningProcesses.txt | Measure-Object -Line | Select -ExpandProperty Lines
 $proclistcount -= 2
 $proclistcount = "Number of Processes Logged: " + $proclistcount
 
@@ -72,9 +66,7 @@ Add-Content $f\ActivityRecord.txt ""
 
 # Look for impersonation
 Add-Content $f\ActivityRecord.txt "Checking for EASY TO DETECT process impersonation"
-$h = Get-Process | Select ProcessName
-$h = $h -replace "@{ProcessName=",""
-$h = $h -replace "}",""
+$h = Get-Process | Select -ExpandProperty ProcessName
 
 foreach ($i in $h) {
     $procname = $i
@@ -107,13 +99,9 @@ Add-Content $f\ActivityRecord.txt ""
 
 Get-Service | Where-Object { $_.Status -eq "Running" } | Out-File $f\RunningServices.txt
 Get-Service | Where-Object { $_.Status -eq "Stopped" } | Out-File $f\StoppedServices.txt
-$runningservicehash = Get-FileHash $f\RunningServices.txt | Select Hash
-$runningservicehash = $runningservicehash -replace "@{Hash=",""
-$runningservicehash = $runningservicehash -replace "}",""
+$runningservicehash = Get-FileHash $f\RunningServices.txt | Select -ExpandProperty Hash
 $a = "RunningServices.txt file hash (SHA256): " + $runningservicehash
-$runningservicescount = Get-Content $f\RunningServices.txt | Measure-Object -Line | Select Lines
-$runningservicescount = $runningservicescount -replace "@{Lines=",""
-$runningservicescount = $runningservicescount -replace "}",""
+$runningservicescount = Get-Content $f\RunningServices.txt | Measure-Object -Line | Select -ExpandProperty Lines
 $runningservicescount -= 2
 $b = "Number of running services: " + $runningservicescount
 
@@ -121,13 +109,9 @@ Add-Content $f\ActivityRecord.txt "A list of running services has been created i
 Add-Content $f\ActivityRecord.txt $a
 Add-Content $f\ActivityRecord.txt $b
 
-$stopservhash = Get-FileHash $f\StoppedServices.txt | Select Hash
-$stopservhash = $stopservhash -replace "@{Hash=",""
-$stopservhash = $stopservhash -replace "}",""
+$stopservhash = Get-FileHash $f\StoppedServices.txt | Select -ExpandProperty Hash
 $a = "StoppedServices.txt file hash (SHA256): " + $stopservhash
-$stopservcnt = Get-Content $f\StoppedServices.txt | Measure-Object -Line | Select Lines
-$stopservcnt = $stopservcnt -replace "@{Lines=",""
-$stopservcnt = $stopservcnt -replace "}",""
+$stopservcnt = Get-Content $f\StoppedServices.txt | Measure-Object -Line | Select -ExpandProperty Lines
 $stopservcnt -= 2
 $b = "Number of services stopped: " + $stopservcnt
 
@@ -150,9 +134,7 @@ Get-ChildItem -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\' | 
 
 Add-Content $f\ActivityRecord.txt ""
 Add-Content $f\ActivityRecord.txt "Known DLLs (registry key) has been exported to .\KnownDLLs.txt"
-$kdllshash = Get-FileHash $f\KnownDLLs.txt | Select Hash
-$kdllshash = $kdllshash -replace "@{Hash=",""
-$kdllshash = $kdllshash -replace "}",""
+$kdllshash = Get-FileHash $f\KnownDLLs.txt | Select -ExpandProperty Hash
 $a = "Autostarts.txt file hash (SHA256): " + $kdllshash
 Add-Content $f\ActivityRecord.txt $a
 Add-Content $f\ActivityRecord.txt ""
@@ -192,12 +174,9 @@ Add-Content $f\Autostarts.txt ""
 
 # Update Log
 Add-Content $f\ActivityRecord.txt "Common Registry Autostart locations copied to Autostarts.txt"
-$autostartshash = Get-FileHash $f\Autostarts.txt | Select Hash
-$autostartshash = $autostartshash -replace "@{Hash=",""
-$autostartshash = $autostartshash -replace "}",""
+$autostartshash = Get-FileHash $f\Autostarts.txt | Select -ExpandProperty Hash
 $a = "Autostarts.txt file hash (SHA256): " + $autostartshash
 Add-Content $f\ActivityRecord.txt $a
-
 
 # ## End Of Document
 Add-Content $f\ActivityRecord.txt ""
@@ -214,10 +193,12 @@ Add-Content $f\ActivityRecord.txt $b
 Add-Content $f\ActivityRecord.txt ""
 Add-Content $f\ActivityRecord.txt "---------------------------"
 
+# ## Report back to user 
 Clear-Host
 Write-Host "Processing Completed at $a" -ForegroundColor White -BackgroundColor Black
 Write-Host "Log data stored in $f\ActivityRecord.txt" -ForegroundColor White -BackgroundColor Black
-Get-FileHash $f\Autostarts.txt | Select Hash 
+$h = Get-FileHash $f\Autostarts.txt | Select -ExpandProperty Hash 
+Write-Host "For reference, the hash value of the activity record is: " $h
 
 # #################################################################################################
 # ####### IMPORT FUNCTIONS ########################################################################
