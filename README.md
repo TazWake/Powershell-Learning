@@ -7,6 +7,7 @@ The from others directory will hold any scripts which have been 100% lifted and 
 
 ## NMAP - Example XML Format
 
+```XML
 <nmaprun>
 	<host comment="">
 		<status state="up"></status>
@@ -41,4 +42,4 @@ The from others directory will hold any scripts which have been 100% lifted and 
 		<ipidsequence></ipidsequence>
 		<tcptssequence></tcptssequence>
 	</host>
-</nmaprun>
+</nmaprun>```
