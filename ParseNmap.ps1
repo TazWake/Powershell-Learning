@@ -1,3 +1,5 @@
+# Currently this script does not work as intended
+
 # Check a file has been passed
 param([string]$path="")
 
