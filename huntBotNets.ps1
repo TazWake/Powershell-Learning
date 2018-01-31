@@ -18,6 +18,7 @@ huntBotNets.ps1 -BotNetIP 192.168.2.1 -OutPath C:\DFIRLOGS\
 
 .LINK
 
+https://github.com/TazWake/Powershell-Learning/blob/master/huntBotNets.ps1
 
 #>
 
@@ -25,7 +26,6 @@ param(
      [Parameter(Mandatory=$true)][string]$BotNetIP,
      [string]$OutPath = ".\"
      )
-
 
 # Initial data for logging
 $HostName = (gi env:\Computername).Value
