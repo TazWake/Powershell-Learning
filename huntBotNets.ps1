@@ -8,6 +8,10 @@ A PowerShell script to assist incident responders in hunting down suspicious net
 Using network IOCs, huntBotNets searches for connections to identified malicious IP addresses.
 Output is stored into a text file.
 
+Must be invoked with an IP address to search for.
+
+Can be invoked with a path to where you want the output file saved.
+
 .Example
 
 huntBotNets.ps1 -BotNetIP 192.168.2.1
