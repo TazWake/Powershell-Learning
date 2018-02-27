@@ -1,5 +1,5 @@
 <#
-MimiKatzChecker UNDER DEVELOPMENT
+MimiKatzChecker UNDER DEVELOPMENT -< CODE MAY HAVE ISSUES >-
 
 .SYNOPSIS
 This tool checks some common indicators that MimiKatz has run on a target system.
