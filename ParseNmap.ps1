@@ -1,4 +1,8 @@
-# Currently this script does not work as intended
+# ################################################ #
+#                                                  #
+# Currently this script does not work as intended  #
+#                                                  #
+# ################################################ #
 
 # Check a file has been passed
 param([string]$path="")
@@ -7,7 +11,6 @@ if ($path -eq "") {
     Write-Host "Missing Path"
     Exit
 }
-
 
 [xml]$holder = Get-Content $path
 
@@ -41,7 +44,6 @@ foreach ($obj in $block) {
         $c = $c + 1
     }
 }
-
 
 $c = 0
 foreach ($a in $ips) { 
