@@ -28,21 +28,21 @@ $firsthalf = $octets[0]+ "." + $octets[1]
 if ([ipaddress]$TargetIP) {
 Write-Host "Checking IP Address"
 
-    if ($octets[0] -eq 10) {
+    if ([int]$octets[0] -eq 10) {
         $test = "fail"
         Write-Host "This is a private IP Address. No Recon is possible"
     } 
-    if ($octets[0] -eq 127) {
+    if ([int]$octets[0] -eq 127) {
         $test = "fail"
         Write-Host "This is a loopback IP Address. No Recon is possible"
     }
-    if ($octets[0] -ge 224) {
+    if ([int]$octets[0] -ge 224) {
         $test = "fail"
         Write-Host "This is a reserved IP Address. No Recon is possible"
     }
-    if ($octets[0] -eq 172) {
-        if ($octets[1] -ge 16) {
-            if ($octets[1] -le 31) {
+    if ([int]$octets[0] -eq 172) {
+        if ([int]$octets[1] -ge 16) {
+            if ([int]$octets[1] -le 31) {
                 $test = "fail"
                 Write-Host "This is a private IP Address. No Recon is possible"
             }
