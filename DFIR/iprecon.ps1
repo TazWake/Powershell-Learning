@@ -8,7 +8,7 @@ iprecon.ps1 -TargetIP 8.8.8.8
 .EXAMPLE
 
 .LINK
-https://github.com/TazWake/Powershell-Learning/blob/master/huntBotNets.ps1
+https://github.com/TazWake/Powershell-Learning/blob/master/DFIR/iprecon.ps1
 .NOTES
 
 1) Output to a file
