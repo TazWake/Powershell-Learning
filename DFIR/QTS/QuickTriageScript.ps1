@@ -12,7 +12,7 @@ If it is not already available, make sure the function block is moved to the sta
 other functionality.
 
 #>
- = Get-Date -Format FileDateTimeUniversal
+$f = Get-Date -Format FileDateTimeUniversal
 $f = "Analysis" + $f
 New-Item $f -type directory
 
