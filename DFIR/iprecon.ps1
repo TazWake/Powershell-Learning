@@ -13,7 +13,7 @@ To Do List
 1) Output to a file
 2) Allow multiple input IPs
 3) Improve quality of search tools utilised
-4) Work out why 8.x and 88.x IP addresses trigger as reserved.
+
 #>
 param(
      [Parameter(Mandatory=$true)][string]$TargetIP
@@ -30,37 +30,33 @@ Write-Host "Checking IP Address"
 
     if ([int]$octets[0] -eq 10) {
         $test = "fail"
-        Write-Host "This is a private IP Address. No Recon is possible"
+        Write-Host "The IP provided is in the RFC1918 private address space. It is not possible to conduct external reconnaissance against this. If this is a source of malicious activity, there may be a compromised host on the network. "
     } 
     if ([int]$octets[0] -eq 127) {
         $test = "fail"
-        Write-Host "This is a loopback IP Address. No Recon is possible"
+        Write-Host "The IP provided appears to point to the local machine. No reconnaissance is possible. You might want to establish why this has shown up."
     }
     if ([int]$octets[0] -ge 224) {
         $test = "fail"
-        Write-Host "This is a reserved IP Address. No Recon is possible"
+        Write-Host "This is a reserved IP Address - please see RFC3171 for more details. No reconnaissace is possible"
     }
     if ([int]$octets[0] -eq 172) {
         if ([int]$octets[1] -ge 16) {
             if ([int]$octets[1] -le 31) {
                 $test = "fail"
-                Write-Host "This is a private IP Address. No Recon is possible"
+                Write-Host "The IP provided is in the RFC1918 private address space. It is not possible to conduct external reconnaissance against this. If this is a source of malicious activity, there may be a compromised host on the network."
             }
         }
     }
     if ($firsthalf -eq "192.168") {
         $test = "fail"
-        Write-Host "This is a private IP Address. No Recon is possible"
+        Write-Host "The IP provided is in the RFC1918 private address space. It is not possible to conduct external reconnaissance against this. If this is a source of malicious activity, there may be a compromised host on the network."
     }
     if ($test -eq "pass") {
         Write-Host "This IP address appears suitable for reconnaisance - starting browsers now"
+        Start-Process -FilePath chrome.exe -ArgumentList "http://www.virustotal.com/#/ip-address/$TargetIP"
+        Start-Process -FilePath chrome.exe -ArgumentList "http://www.ipvoid.com/scan/$TargetIP"
+        Start-Process -FilePath chrome.exe -ArgumentList "http://www.ip-tracker.org/blacklist-check.php?ip=$TargetIP"
+        Start-Process -FilePath chrome.exe -ArgumentList "http://www.evuln.com/tools/malware-scanner/$TargetIP"
     }
 } 
-
-<# begin searches #>
-if ($test -eq "pass") {
-    Start-Process -FilePath chrome.exe -ArgumentList "http://www.virustotal.com/#/ip-address/$TargetIP"
-    Start-Process -FilePath chrome.exe -ArgumentList "http://www.ipvoid.com/scan/$TargetIP"
-    Start-Process -FilePath chrome.exe -ArgumentList "http://www.ip-tracker.org/blacklist-check.php?ip=$TargetIP"
-    Start-Process -FilePath chrome.exe -ArgumentList "http://www.evuln.com/tools/malware-scanner/$TargetIP"
-    }
