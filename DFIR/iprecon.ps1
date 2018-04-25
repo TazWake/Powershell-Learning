@@ -16,3 +16,9 @@ https://github.com/TazWake/Powershell-Learning/blob/master/huntBotNets.ps1
 3) Improve quality of search tools utilised.
 #>
 
+<# input data #>
+
+<# check data #>
+
+<# begin searches #>
+Start-Process -FilePath chrome.exe -ArgumentList "http://example.com"
