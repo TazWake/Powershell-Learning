@@ -15,10 +15,18 @@ https://github.com/TazWake/Powershell-Learning/blob/master/DFIR/iprecon.ps1
 2) Allow multiple input IPs
 3) Improve quality of search tools utilised.
 #>
-
-<# input data #>
+param(
+     [Parameter(Mandatory=$true)][string]$TargetIP,
+     )
+$initial = $TargetIP.IndexOf(".")
+$first = $TargetIP.Substring(0, $initial)
+$second = $TargetIP.Substring($initial+1)
+$third = $TargetIP.Substring($initial+1)
+$fourth = $TargetIP.Substring($initial+1)
 
 <# check data #>
+
+
 
 <# begin searches #>
 Start-Process -FilePath chrome.exe -ArgumentList "http://example.com"
