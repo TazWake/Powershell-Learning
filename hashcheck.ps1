@@ -12,16 +12,16 @@ $ripemd = Get-FileHash $TargetFile -Algorithm RIPEMD160 | select -ExpandProperty
 
 Add-Content filehashes.txt "--------------------------------------------------------------------------"
 Add-Content filehashes.txt "File Hashes Generated for $TargetFile"
-Add-Content filehashes.txt $md5
-Add-Content filehashes.txt $sha1
-Add-Content filehashes.txt $sha2
-Add-Content filehashes.txt $ripemd
+Add-Content filehashes.txt "MD5 Hash : $md5"
+Add-Content filehashes.txt "SHA1 Hash :  $sha1"
+Add-Content filehashes.txt "SHA256 Hash : $sha2"
+Add-Content filehashes.txt "RIPEMD160 Hash : $ripemd"
 Add-Content filehashes.txt "--------------------------------------------------------------------------"
 
 Clear-Host
 
 Write-Host "MD5 Hash: $md5"
 Write-Host "SHA1 Hash: $sha1"
-Write-Host "SHA2 Hash: $sha2"
+Write-Host "SHA256 Hash: $sha2"
 Write-Host "RIPEMD160 Hash: $ripemd"
 Write-Host "Hashes stored in filehashes.txt"
