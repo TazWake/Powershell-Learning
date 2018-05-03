@@ -18,7 +18,7 @@ The following command will use the userlist at users.txt and try to authenticate
 Invoke-DomainPasswordSpray -UserList users.txt -Domain domain-name -PasswordList passlist.txt -OutFile sprayed-creds.txt
 ```
 
-###Invoke-DomainPasswordSpray Options
+### Invoke-DomainPasswordSpray Options
 ```
 UserList          - Optional UserList parameter. This will be generated automatically if not specified.
 Password          - A single password that will be used to perform the password spray.
