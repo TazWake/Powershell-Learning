@@ -1,8 +1,8 @@
 <#
 check an IP address against blocklists
 https://raw.githubusercontent.com/ktsaou/blocklist-ipsets/master/firehol_level1.netset
-
 #>
+
 param(
     [Parameter(Mandatory=$true)][string]$suspIP
     )
