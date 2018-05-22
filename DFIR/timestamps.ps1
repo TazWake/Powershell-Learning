@@ -1,36 +1,28 @@
 <#
 .SYNOPSIS
-
 Script to display the Creation, Access and Write times of files in a given folder.
 
 .DESCRIPTION
-
 This script reports key details about files in a given folder. It identifies the filename, filesize (in bytes), creation/access/write times.
 If no path is provided with the execution it looks at files in the current path.
 
 .EXAMPLE
-
 timestamps.ps1
 
 .EXAMPLE
-
 timestamps.ps1 -targetPath C:\Windows\temp -outputPath D:\incidentresponse\
 
 .LINK
-
 https://github.com/TazWake/Powershell-Learning/blob/master/DFIR/timestamps.ps1
 
 .NOTES
 To Do List
-
-1) Fix the output issues with the writeCSV function
 
 #>
 param(
     [Parameter(Mandatory=$false)][string]$targetPath,
     [Parameter(Mandatory=$false)][string]$outputPath
     )
-
 function outData {
     $output = "$outputPath\timestamps.csv"
     if ((Test-Path -Path $output) -eq $false) {
@@ -40,24 +32,23 @@ function outData {
     return $output
 }
 function writeCSV ($scanpath, $outpath) {
-    $box = Get-ItemProperty -Path $scanpath | Format-list -Property Name, Length, CreationTimeUtc, LastAccessTimeUtc, LastWriteTimeUtc | Out-File -FilePath $outpath -Append -Encoding ascii -Force
-    $data = $box.Name + "," + $box.Length + "," + $box.CreationTimeUtc + "," + $box.LastAccessTimeUtc + "," + $box.LastWriteTimeUtc
-    <# $data | Out-File -FilePath $outpath -Append -Encoding ascii -Force #>
+    $files = Get-ChildItem $scanpath -Recurse
+    foreach ($file in $files) {
+        $box = Get-ItemProperty $file 
+        $data = $box.Name + "," + $box.Length + "," + $box.CreationTimeUtc + "," + $box.LastAccessTimeUtc + "," + $box.LastWriteTimeUtc
+        $data | Out-File -FilePath $outpath -Append -Encoding ascii -Force
+        }
+
 }
-
 $scanpath = "*"
-
 if ($targetPath) {
     $scanpath = $targetPath
     }
-
 Write-Host "Starting collection"
 if ($outputPath) {
     $filepath = outData
     $filepath = "$outputPath\timestamps.csv" <# fudge to get round an odd issue #>
     writeCSV $scanpath $filepath
 }
-
 Get-ItemProperty -Path $scanpath | Format-list -Property Name, Length, CreationTimeUtc, LastAccessTimeUtc, LastWriteTimeUtc
-
 Write-Host "Collection completed"
