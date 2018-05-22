@@ -26,7 +26,6 @@ To Do List
 1) Clean up output to make CSV useable
 
 #>
-
 param(
     [Parameter(Mandatory=$false)][string]$targetPath,
     [Parameter(Mandatory=$false)][string]$outputPath
