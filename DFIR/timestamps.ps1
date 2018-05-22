@@ -23,7 +23,7 @@ https://github.com/TazWake/Powershell-Learning/blob/master/DFIR/timestamps.ps1
 .NOTES
 To Do List
 
-1) Clean up output to make CSV useable
+1) Fix the output issues with the writeCSV function
 
 #>
 param(
@@ -40,9 +40,9 @@ function outData {
     return $output
 }
 function writeCSV ($scanpath, $outpath) {
-    $box = Get-ItemProperty -Path $scanpath
+    $box = Get-ItemProperty -Path $scanpath | Format-list -Property Name, Length, CreationTimeUtc, LastAccessTimeUtc, LastWriteTimeUtc | Out-File -FilePath $outpath -Append -Encoding ascii -Force
     $data = $box.Name + "," + $box.Length + "," + $box.CreationTimeUtc + "," + $box.LastAccessTimeUtc + "," + $box.LastWriteTimeUtc
-    $data | Out-File -FilePath $outpath -Append -Encoding ascii -Force
+    <# $data | Out-File -FilePath $outpath -Append -Encoding ascii -Force #>
 }
 
 $scanpath = "*"
