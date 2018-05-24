@@ -17,7 +17,7 @@ https://github.com/TazWake/Powershell-Learning/blob/master/DFIR/timestamps.ps1
 
 .NOTES
 To Do List
-
+1) Create a to-do list
 #>
 param(
     [Parameter(Mandatory=$false)][string]$targetPath,
@@ -38,7 +38,6 @@ function writeCSV ($scanpath, $outpath) {
         $data = $box.Name + "," + $box.Length + "," + $box.CreationTimeUtc + "," + $box.LastAccessTimeUtc + "," + $box.LastWriteTimeUtc
         $data | Out-File -FilePath $outpath -Append -Encoding ascii -Force
         }
-
 }
 $scanpath = "*"
 if ($targetPath) {
