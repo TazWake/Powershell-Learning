@@ -11,19 +11,15 @@ Required Dependencies: None
 Optional Dependencies: None
 
 .DESCRIPTION
-
 This module performs a password spray attack against the local users of a system. By default it will automatically generate the userlist from the system. Be careful not to lockout any accounts.
 
 .PARAMETER UserList
-
 Optional UserList parameter. This will be generated automatically if not specified
 
 .PARAMETER Password
-
 A single password that will be used to perform the password spray
 
 .EXAMPLE
-
 C:\PS> Invoke-LocalPasswordSpray -Password Spring2017
 
 Description
@@ -31,13 +27,11 @@ Description
 This command will automatically generate a list of users from the local system and attempt to authenticate using each username and a password of Spring2017.
 
 .EXAMPLE
-
 C:\PS> Invoke-LocalPasswordSpray -UserList users.txt -Password Winter2017
 
 Description
 -----------
 This command will use the userlist at users.txt and try to authenticate using the password Winter2017 for each user.
-
 
 #>
 Param(
