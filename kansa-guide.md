@@ -1,6 +1,12 @@
 # Kansa Guide
 This is a brain dump of the steps needed to utilise Kansa at its best.
 
+## Addon Requirements
+* Sysinternals
+* * handle.exe
+* * autorunsc.exe
+* LogParser
+
 ## Set Up
 * Ensure PowerShell 3.0 or later is deployed domain wide
 * On investigator machine install `handle.exe` and `autorunssc.exe` from Sysinternals (ideally into C:\Windows)
