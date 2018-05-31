@@ -3,8 +3,8 @@ This is a brain dump of the steps needed to utilise Kansa at its best.
 
 ## Addon Requirements
 * Sysinternals
-* * handle.exe
-* * autorunsc.exe
+  * handle.exe
+  * autorunsc.exe
 * LogParser
 
 ## Set Up
