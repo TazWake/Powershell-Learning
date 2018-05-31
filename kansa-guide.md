@@ -3,8 +3,8 @@ This is a brain dump of the steps needed to utilise Kansa at its best.
 
 ## Addon Requirements
 * Sysinternals
-  * handle.exe
-  * autorunsc.exe
+    * handle.exe
+    * autorunsc.exe
 * LogParser
 
 ## Set Up
@@ -14,6 +14,12 @@ This is a brain dump of the steps needed to utilise Kansa at its best.
 * On the investigator machine install `Logparser` from Microsoft
 * Ensure all target machines have WinRM enabled ( `winrm quickconfig` )
 * Create a hosts file listing all the targeted machines
+
+## Configuration
+* edit the `Modules\Modules.conf` file to match needs
+    * Comment out any which cause errors
+    * Check ones which need specific binaries
+* edit the `Analysis\Analysis.conf` file to match needs
 
 ## Run Kansa
 `kansa.ps1 -TargetList .\hosts.txt -ModulePath .\Modules -PushBin -RmBin -Verbose -Analysis`
