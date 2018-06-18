@@ -1,7 +1,12 @@
 # ################################################ #
+# ################################################ #
 #                                                  #
 # Currently this script does not work as intended  #
+#  The objective is to parse an nmap XML file      #
+#  and recover a list of hosts or IP addresses     #
+#  for processing in other applications            #
 #                                                  #
+# ################################################ #
 # ################################################ #
 
 # Check a file has been passed
