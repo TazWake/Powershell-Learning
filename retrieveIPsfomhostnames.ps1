@@ -14,4 +14,5 @@ ForEach ($i in $list){
     Add-Content hostips.csv "$hostname,$ip"
     Add-Content hostips.txt "$hostname - $ip"
     Write-Host "$hostname is $ip"
+    $ip = ""
  }
